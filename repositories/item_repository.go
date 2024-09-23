@@ -9,6 +9,7 @@ import (
 
 type IItemRepository interface {
 	Create(newItem models.Item) (*models.Item, error)
+	FindAll() (*[]models.Item, error)
 }
 
 type ItemRepository struct {
@@ -25,4 +26,13 @@ func (r *ItemRepository) Create(newItem models.Item) (*models.Item, error) {
 		return nil, result.Error
 	}
 	return &newItem, nil
+}
+
+func (r *ItemRepository) FindAll() (*[]models.Item, error) {
+	var items []models.Item
+	result := r.db.Find(&items)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &items, nil
 }

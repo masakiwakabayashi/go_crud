@@ -19,5 +19,6 @@ func main() {
 
 	r := gin.Default()
 	r.POST("/items", itemController.Create)
-    r.Run("localhost:8080")
+	r.GET("/items", itemController.FindAll)
+  r.Run("localhost:8080")
 }
