@@ -9,6 +9,7 @@ import (
 type IItemService interface {
 	Create(createItemInput dto.CreateItemInput) (*models.Item, error)
 	FindAll() (*[]models.Item, error)
+	FindById(itemId uint) (*models.Item, error)
 }
 
 type ItemService struct {
@@ -31,4 +32,8 @@ func (s *ItemService) Create(createItemInput dto.CreateItemInput) (*models.Item,
 
 func (s *ItemService) FindAll() (*[]models.Item, error) {
 	return s.repository.FindAll()
+}
+
+func (s *ItemService) FindById(itemId uint) (*models.Item, error) {
+	return s.repository.FindById(itemId)
 }

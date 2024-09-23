@@ -4,6 +4,7 @@ import (
 	"go_crud/dto"
 	"go_crud/services"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,6 +12,7 @@ import (
 type IItemController interface {
 	Create(ctx *gin.Context)
 	FindAll(ctx *gin.Context)
+	FindById(ctx *gin.Context)
 }
 
 type ItemController struct {
@@ -45,4 +47,22 @@ func (c ItemController) FindAll(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"data": items})
+}
+
+func (c ItemController) FindById(ctx *gin.Context) {
+	itemId, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id"})
+		return
+	}
+	item, err := c.service.FindById(uint(itemId))
+	if err != nil {
+		if err.Error() == "Item not found" {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unexpected error"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"data": item})
 }

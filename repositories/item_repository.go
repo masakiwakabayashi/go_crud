@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"errors"
 	"go_crud/models"
 
 	"gorm.io/gorm"
@@ -10,6 +11,7 @@ import (
 type IItemRepository interface {
 	Create(newItem models.Item) (*models.Item, error)
 	FindAll() (*[]models.Item, error)
+	FindById(itemId uint) (*models.Item, error)
 }
 
 type ItemRepository struct {
@@ -35,4 +37,16 @@ func (r *ItemRepository) FindAll() (*[]models.Item, error) {
 		return nil, result.Error
 	}
 	return &items, nil
+}
+
+func (r *ItemRepository) FindById(itemId uint) (*models.Item, error) {
+	var item models.Item
+	result := r.db.First(&item, "id = ?", itemId)
+	if result.Error != nil {
+		if result.Error.Error() == "record not found" {
+			return nil, errors.New("item not found")
+		}
+		return nil, result.Error
+	}
+	return &item, nil
 }
